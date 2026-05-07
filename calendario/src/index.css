@@ -16,6 +16,7 @@ body {
   background: var(--bg);
 }
 
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -88,8 +89,9 @@ button {
   background: var(--red-hover);
 }
 
+
 .add-event-btn {
-  background: #bde0fe; /* celeste pastel */
+  background: #bde0fe;
   border: 2px solid #2b2b2b;
   border-radius: 12px;
   padding: 10px 18px;
@@ -99,11 +101,100 @@ button {
 }
 
 .add-event-btn:hover {
-  background: #a2d2ff; /* un poco más fuerte */
-  transform: scale(1.05); /* efecto que se agranda */
+  background: #a2d2ff;
+  transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .add-event-btn:active {
   transform: scale(0.97);
+}
+
+
+.calendar-container {
+  padding: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.view-selector select {
+  background-color: #bde0fe;
+  border: 2px solid #2b2b2b;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s ease;
+}
+
+.view-selector select:hover {
+  background-color: #a2d2ff;
+  transform: scale(1.05);
+}
+
+.month-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+
+  border-top: 2px solid #2b2b2b;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.month-nav button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 14px;
+  padding: 10px 30px;
+}
+
+.day-cell {
+  height: 75px;
+  border-radius: 14px;
+  border: 2px solid #2b2b2b;
+  background-color: #eee;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.day-cell:hover {
+  background-color: #ddd;
+  transform: scale(1.03);
+}
+
+.day-cell.has-events {
+  background: #a8e6a3;
+}
+
+.day-cell.has-events:hover {
+  background: #8fdc8a;
+}
+
+.empty-cell {
+  visibility: hidden;
 }
