@@ -1,8 +1,21 @@
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 import AddEventPopup from "./components/AddEvent";
+import MonthView from "./components/MonthView";
+
+function Home({ onOpenPopup }) {
+  return (
+    <div>
+      <h1>Inicio</h1>
+
+      <Link to="/mes">
+        <button>Ir a vista mensual</button>
+      </Link>
+    </div>
+  );
+}
 
 function App() {
-
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleClose = () => {
@@ -11,24 +24,28 @@ function App() {
 
   const handleAddEvent = (event) => {
     console.log("Evento enviado:", event);
-
     setIsPopupOpen(false);
   };
 
   return (
-    <div>
-
-      <button className="add-event-btn" onClick={() => setIsPopupOpen(true)}>
-        Agregar evento
-      </button>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home onOpenPopup={() => setIsPopupOpen(true)} />}
+        />
+        <Route
+          path="/mes"
+          element={<MonthView onAddEvent={() => setIsPopupOpen(true)} />}
+        />
+      </Routes>
 
       <AddEventPopup
         isOpen={isPopupOpen}
         onClose={handleClose}
         onAddEvent={handleAddEvent}
       />
-
-    </div>
+    </Router>
   );
 }
 
