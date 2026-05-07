@@ -16,7 +16,6 @@ body {
   background: var(--bg);
 }
 
-/* overlay */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -28,7 +27,6 @@ body {
   justify-content: center;
 }
 
-/* popup */
 .popup {
   background: var(--popup-bg);
   border: 2px solid var(--border);
@@ -40,13 +38,11 @@ body {
   gap: 12px;
 }
 
-/* titulo */
 .popup h2 {
   text-align: center;
   margin-bottom: 10px;
 }
 
-/* inputs */
 .popup input,
 .popup select {
   border: 2px solid var(--border);
@@ -56,13 +52,11 @@ body {
   background: white;
 }
 
-/* fila fecha */
 .date-row {
   display: flex;
   gap: 10px;
 }
 
-/* botones */
 .buttons {
   display: flex;
   justify-content: center;
@@ -92,4 +86,24 @@ button {
 
 .cancel:hover {
   background: var(--red-hover);
+}
+
+.add-event-btn {
+  background: #bde0fe; /* celeste pastel */
+  border: 2px solid #2b2b2b;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-event-btn:hover {
+  background: #a2d2ff; /* un poco más fuerte */
+  transform: scale(1.05); /* efecto que se agranda */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.add-event-btn:active {
+  transform: scale(0.97);
 }

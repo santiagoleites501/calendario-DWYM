@@ -18,7 +18,7 @@ function App() {
   return (
     <div>
 
-      <button onClick={() => setIsPopupOpen(true)}>
+      <button className="add-event-btn" onClick={() => setIsPopupOpen(true)}>
         Agregar evento
       </button>
 
