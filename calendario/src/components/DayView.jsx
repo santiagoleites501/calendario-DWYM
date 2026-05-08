@@ -1,37 +1,30 @@
-import { useState } from "react";
+const monthNames = [
+  "Enero", "Febrero", "Marzo", "Abril",
+  "Mayo", "Junio", "Julio", "Agosto",
+  "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
 
 function DayView({ dayData, onBack, onDeleteEvent }) {
-  const [currentDay, setCurrentDay] = useState(dayData);
-
-  if (!currentDay) return <p>No hay datos</p>;
-
-  const handleDelete = (index) => {
-    onDeleteEvent(currentDay.day, index);
-
-    setCurrentDay(prev => ({
-      ...prev,
-      events: prev.events.filter((_, i) => i !== index)
-    }));
-  };
+  if (!dayData) return <p>No hay datos</p>;
 
   return (
     <div className="day-container">
-
       <button className="back-btn" onClick={onBack}>
         ← Volver
       </button>
 
       <div className="day-header">
-        <h2>Día {currentDay.day}</h2>
+        <h2>
+          {monthNames[dayData.month - 1]} {dayData.day}
+        </h2>
       </div>
 
       <div className="events-list">
-        {currentDay.events.length === 0 ? (
+        {dayData.events.length === 0 ? (
           <p>No hay eventos</p>
         ) : (
-          currentDay.events.map((event, index) => (
+          dayData.events.map((event, index) => (
             <div key={index} className="event-item">
-
               <span>
                 <strong>{event.title}</strong> inicio {event.startHour} fin {event.endHour}
               </span>
@@ -41,17 +34,17 @@ function DayView({ dayData, onBack, onDeleteEvent }) {
 
                 <button
                   className="icon-btn delete"
-                  onClick={() => handleDelete(index)}
+                  onClick={() =>
+                    onDeleteEvent(dayData.month, dayData.day, index)
+                  }
                 >
                   🗑️
                 </button>
               </div>
-
             </div>
           ))
         )}
       </div>
-
     </div>
   );
 }
