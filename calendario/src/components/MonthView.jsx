@@ -73,7 +73,7 @@ function MonthView({ months, onAddEvent, onSelectDay }) {
             <button
               key={i}
               className={`day-cell ${dayData.events.length ? "has-events" : ""}`}
-              onClick={() => onSelectDay(dayData)}
+              onClick={() => onSelectDay(dayData, currentMonth.month)}
             >
               {dayData.day}
             </button>

@@ -4,7 +4,8 @@ import {
   Route,
   Link,
   useNavigate,
-  useLocation
+  useLocation,
+  useParams
 } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -34,15 +35,29 @@ function MonthPage({ months, onOpenPopup, onSelectDay }) {
   );
 }
 
-function DayPage({ onDeleteEvent }) {
+function DayPage({ months, onDeleteEvent }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { month, day } = useParams();
 
-  const dayData = location.state?.dayData;
+  const monthNumber = Number(month);
+  const dayNumber = Number(day);
+
+  const dayData = months
+    .find(m => m.month === monthNumber)
+    ?.days.find(d => d.day === dayNumber);
+
+  if (!dayData) {
+    return (
+      <div>
+        <h2>Día no encontrado</h2>
+        <button onClick={() => navigate("/mes")}>Volver</button>
+      </div>
+    );
+  }
 
   return (
     <DayView
-      dayData={dayData}
+      dayData={{ ...dayData, month: monthNumber }}
       onBack={() => navigate(-1)}
       onDeleteEvent={onDeleteEvent}
     />
@@ -64,48 +79,90 @@ function App() {
     setIsPopupOpen(false);
   };
 
-  const handleAddEvent = (newEventData) => {
-    setMonths(prevMonths =>
-      prevMonths.map(m => {
-        if (m.month !== newEventData.month) return m;
+  const handleAddEvent = async (newEventData) => {
+    try {
+      const res = await fetch("http://localhost:3000/months");
+      const data = await res.json();
 
-        return {
-          ...m,
-          days: m.days.map(d => {
-            if (d.day !== newEventData.day) return d;
+      const month = data.find(m => m.month === newEventData.month);
+      const day = month.days.find(d => d.day === newEventData.day);
 
-            return {
-              ...d,
-              events: [...d.events, newEventData.event]
-            };
-          })
-        };
-      })
-    );
+      day.events.push(newEventData.event);
 
-    setIsPopupOpen(false);
-  };
+      await fetch(`http://localhost:3000/months/${month.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(month),
+      });
 
-  const handleDeleteEvent = (day, eventIndex) => {
-    setMonths(prevMonths =>
-      prevMonths.map(m => ({
-        ...m,
-        days: m.days.map(d => {
-          if (d.day !== day) return d;
+      setMonths(prev =>
+        prev.map(m => {
+          if (m.month !== newEventData.month) return m;
 
           return {
-            ...d,
-            events: d.events.filter((_, i) => i !== eventIndex)
+            ...m,
+            days: m.days.map(d => {
+              if (d.day !== newEventData.day) return d;
+
+              return {
+                ...d,
+                events: [...d.events, newEventData.event],
+              };
+            }),
           };
         })
-      }))
-    );
+      );
+
+    } catch (err) {
+      console.error("Error agregando evento:", err);
+    }
+  };
+
+  const handleDeleteEvent = async (month, day, eventIndex) => {
+    try {
+      const res = await fetch("http://localhost:3000/months");
+      const data = await res.json();
+
+      const monthData = data.find(m => m.month === month);
+      const dayData = monthData.days.find(d => d.day === day);
+
+      dayData.events.splice(eventIndex, 1);
+
+      await fetch(`http://localhost:3000/months/${monthData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(monthData),
+      });
+
+      setMonths(prev =>
+        prev.map(m => {
+          if (m.month !== month) return m;
+
+          return {
+            ...m,
+            days: m.days.map(d => {
+              if (d.day !== day) return d;
+
+              return {
+                ...d,
+                events: d.events.filter((_, i) => i !== eventIndex),
+              };
+            }),
+          };
+        })
+      );
+
+    } catch (err) {
+      console.error("Error eliminando evento:", err);
+    }
   };
 
   const navigate = useNavigate();
 
-  const handleSelectDay = (dayData) => {
-    navigate(`/dia/${dayData.day}`, { state: { dayData } });
+  const handleSelectDay = (dayData, month) => {
+    navigate(`/dia/${month}/${dayData.day}`, {
+      state: { dayData, month }
+    });
   };
 
   return (
@@ -126,9 +183,12 @@ function App() {
         />
 
         <Route
-          path="/dia/:day"
+          path="/dia/:month/:day"
           element={
-            <DayPage onDeleteEvent={handleDeleteEvent} />
+            <DayPage
+              months={months}
+              onDeleteEvent={handleDeleteEvent}
+            />
           }
         />
 

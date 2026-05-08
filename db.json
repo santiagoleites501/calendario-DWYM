@@ -7,13 +7,7 @@
       "days": [
         {
           "day": 1,
-          "events": [
-            {
-              "title": "sdds",
-              "startHour": "ds",
-              "endHour": "sd"
-            }
-          ]
+          "events": []
         },
         {
           "day": 2,
@@ -35,7 +29,13 @@
         },
         {
           "day": 5,
-          "events": []
+          "events": [
+            {
+              "title": "ds",
+              "startHour": "dsdsds",
+              "endHour": "dsdsds"
+            }
+          ]
         },
         {
           "day": 6,
@@ -55,13 +55,7 @@
         },
         {
           "day": 10,
-          "events": [
-            {
-              "title": "Test",
-              "startHour": "wd",
-              "endHour": "ds"
-            }
-          ]
+          "events": []
         },
         {
           "day": 11,
@@ -262,9 +256,9 @@
           "day": 27,
           "events": [
             {
-              "title": "kdwds",
-              "startHour": "sd",
-              "endHour": "ds"
+              "title": "Febreriot",
+              "startHour": "8:00",
+              "endHour": "10:00"
             }
           ]
         },
@@ -1291,7 +1285,13 @@
         },
         {
           "day": 16,
-          "events": []
+          "events": [
+            {
+              "title": "Ijd",
+              "startHour": "12:00",
+              "endHour": "23:00"
+            }
+          ]
         },
         {
           "day": 17,

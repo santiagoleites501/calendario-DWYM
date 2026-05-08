@@ -16,7 +16,6 @@ const months = [
 ];
 
 function AddEventPopup({ isOpen, onClose, onAddEvent }) {
-
   const [title, setTitle] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(1);
   const [selectedDay, setSelectedDay] = useState(1);
@@ -30,7 +29,6 @@ function AddEventPopup({ isOpen, onClose, onAddEvent }) {
   );
 
   const handleSubmit = () => {
-
     const newEvent = {
       title,
       startHour,
@@ -40,21 +38,21 @@ function AddEventPopup({ isOpen, onClose, onAddEvent }) {
     onAddEvent({
       month: selectedMonth,
       day: selectedDay,
-      event: newEvent
+      event: newEvent,
     });
 
-    // reset
     setTitle("");
     setSelectedMonth(1);
     setSelectedDay(1);
     setStartHour("");
     setEndHour("");
+
+    onClose();
   };
 
   return (
     <div className="popup-overlay">
       <div className="popup">
-
         <h2>Crear evento</h2>
 
         <label>Título:</label>
@@ -66,7 +64,6 @@ function AddEventPopup({ isOpen, onClose, onAddEvent }) {
 
         <label>Fecha:</label>
         <div className="date-row">
-
           <select
             value={selectedMonth}
             onChange={(e) => {
@@ -94,7 +91,6 @@ function AddEventPopup({ isOpen, onClose, onAddEvent }) {
               </option>
             ))}
           </select>
-
         </div>
 
         <label>Hora inicio:</label>
@@ -120,7 +116,6 @@ function AddEventPopup({ isOpen, onClose, onAddEvent }) {
             Cancelar
           </button>
         </div>
-
       </div>
     </div>
   );
