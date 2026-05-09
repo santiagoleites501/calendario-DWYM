@@ -1,4 +1,4 @@
-// App.js
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
@@ -8,9 +8,8 @@ import HomePage from "./pages/HomePage";
 import MonthPage from "./pages/MonthPage";
 import WeekPage from "./pages/WeekPage";
 import DayPage from "./pages/DayPage";
+import "./index.css"; 
 
-import "./styles/calendar.css";
-import "./styles/weekView.css";
 
 function App() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
