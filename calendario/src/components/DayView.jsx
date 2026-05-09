@@ -30,7 +30,9 @@ function DayView({ dayData, onBack, onDeleteEvent }) {
               </span>
 
               <div className="event-actions">
-                <button className="icon-btn edit">✏️</button>
+                <button className="icon-btn edit" onClick={() => onEditEvent(dayData.month, dayData.day, index)}>
+                  ✏️
+                </button>
 
                 <button
                   className="icon-btn delete"
