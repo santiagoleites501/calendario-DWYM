@@ -1,176 +1,37 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-  useLocation,
-  useParams
-} from "react-router-dom";
-import { useEffect, useState } from "react";
+// App.js
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 
+import { useEvents } from "./hooks/useEvents";
 import AddEventPopup from "./components/AddEvent";
-import MonthView from "./components/MonthView";
-import DayView from "./components/DayView";
+import HomePage from "./pages/HomePage";
+import MonthPage from "./pages/MonthPage";
+import WeekPage from "./pages/WeekPage";
+import DayPage from "./pages/DayPage";
 
-function Home() {
-  return (
-    <div>
-      <h1>Inicio</h1>
-
-      <Link to="/mes">
-        <button>Ir a vista mensual</button>
-      </Link>
-    </div>
-  );
-}
-
-function MonthPage({ months, onOpenPopup, onSelectDay }) {
-  return (
-    <MonthView
-      months={months}
-      onAddEvent={onOpenPopup}
-      onSelectDay={onSelectDay}
-    />
-  );
-}
-
-function DayPage({ months, onDeleteEvent }) {
-  const navigate = useNavigate();
-  const { month, day } = useParams();
-
-  const monthNumber = Number(month);
-  const dayNumber = Number(day);
-
-  const dayData = months
-    .find(m => m.month === monthNumber)
-    ?.days.find(d => d.day === dayNumber);
-
-  if (!dayData) {
-    return (
-      <div>
-        <h2>Día no encontrado</h2>
-        <button onClick={() => navigate("/mes")}>Volver</button>
-      </div>
-    );
-  }
-
-  return (
-    <DayView
-      dayData={{ ...dayData, month: monthNumber }}
-      onBack={() => navigate(-1)}
-      onDeleteEvent={onDeleteEvent}
-    />
-  );
-}
+import "./styles/calendar.css";
+import "./styles/weekView.css";
 
 function App() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [months, setMonths] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/months")
-      .then(res => res.json())
-      .then(data => setMonths(data))
-      .catch(err => console.error(err));
-  }, []);
-
-  const handleClose = () => {
-    setIsPopupOpen(false);
-  };
-
-  const handleAddEvent = async (newEventData) => {
-    try {
-      const res = await fetch("http://localhost:3000/months");
-      const data = await res.json();
-
-      const month = data.find(m => m.month === newEventData.month);
-      const day = month.days.find(d => d.day === newEventData.day);
-
-      day.events.push(newEventData.event);
-
-      await fetch(`http://localhost:3000/months/${month.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(month),
-      });
-
-      setMonths(prev =>
-        prev.map(m => {
-          if (m.month !== newEventData.month) return m;
-
-          return {
-            ...m,
-            days: m.days.map(d => {
-              if (d.day !== newEventData.day) return d;
-
-              return {
-                ...d,
-                events: [...d.events, newEventData.event],
-              };
-            }),
-          };
-        })
-      );
-
-    } catch (err) {
-      console.error("Error agregando evento:", err);
-    }
-  };
-
-  const handleDeleteEvent = async (month, day, eventIndex) => {
-    try {
-      const res = await fetch("http://localhost:3000/months");
-      const data = await res.json();
-
-      const monthData = data.find(m => m.month === month);
-      const dayData = monthData.days.find(d => d.day === day);
-
-      dayData.events.splice(eventIndex, 1);
-
-      await fetch(`http://localhost:3000/months/${monthData.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(monthData),
-      });
-
-      setMonths(prev =>
-        prev.map(m => {
-          if (m.month !== month) return m;
-
-          return {
-            ...m,
-            days: m.days.map(d => {
-              if (d.day !== day) return d;
-
-              return {
-                ...d,
-                events: d.events.filter((_, i) => i !== eventIndex),
-              };
-            }),
-          };
-        })
-      );
-
-    } catch (err) {
-      console.error("Error eliminando evento:", err);
-    }
-  };
-
-  const navigate = useNavigate();
+  const { months, loading, addEvent, deleteEvent } = useEvents();
 
   const handleSelectDay = (dayData, month) => {
-    navigate(`/dia/${month}/${dayData.day}`, {
-      state: { dayData, month }
-    });
+    window.location.href = `/dia/${month}/${dayData.day}`;
   };
+
+  const handleEventClick = (event, date) => {
+    window.location.href = `/dia/${date.getMonth() + 1}/${date.getDate()}`;
+  };
+
+  if (loading) {
+    return <div className="loading">Cargando calendario...</div>;
+  }
 
   return (
     <>
       <Routes>
-
-        <Route path="/" element={<Home />} />
-
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/mes"
           element={
@@ -181,23 +42,29 @@ function App() {
             />
           }
         />
-
         <Route
-          path="/dia/:month/:day"
+          path="/semana"
           element={
-            <DayPage
+            <WeekPage
               months={months}
-              onDeleteEvent={handleDeleteEvent}
+              onOpenPopup={() => setIsPopupOpen(true)}
+              onSelectDay={handleSelectDay}
+              onEventClick={handleEventClick}
             />
           }
         />
-
+        <Route
+          path="/dia/:month/:day"
+          element={
+            <DayPage months={months} onDeleteEvent={deleteEvent} />
+          }
+        />
       </Routes>
 
       <AddEventPopup
         isOpen={isPopupOpen}
-        onClose={handleClose}
-        onAddEvent={handleAddEvent}
+        onClose={() => setIsPopupOpen(false)}
+        onAddEvent={addEvent}
       />
     </>
   );
@@ -205,8 +72,8 @@ function App() {
 
 export default function AppWrapper() {
   return (
-    <Router>
+    <BrowserRouter>
       <App />
-    </Router>
+    </BrowserRouter>
   );
 }
