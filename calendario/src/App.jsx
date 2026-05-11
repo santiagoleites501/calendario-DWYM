@@ -9,8 +9,7 @@ import {
 } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import AddEvent from "./components/AddEvent";
-import EditEvent from "./components/EditEvent";
+import AddEventPopup from "./components/AddEvent";
 import MonthView from "./components/MonthView";
 import DayView from "./components/DayView";
 
@@ -61,9 +60,6 @@ function DayPage({ months, onDeleteEvent }) {
       dayData={{ ...dayData, month: monthNumber }}
       onBack={() => navigate(-1)}
       onDeleteEvent={onDeleteEvent}
-       onEditEvent={(eventIndex, event) =>
-        onOpenEditPopup({ month: monthNumber, day: dayNumber, eventIndex, ...event })
-      }
     />
   );
 }
