@@ -1,127 +1,122 @@
-import React from 'react'
-import {useState, useEffect} from 'react'
 
-const months = [
-    { month: 1, name: "Enero", days: 31 },
-    { month: 2, name: "Febrero", days: 29 },
-    { month: 3, name: "Marzo", days: 31 },
-    { month: 4, name: "Abril", days: 30 },
-    { month: 5, name: "Mayo", days: 31 },
-    { month: 6, name: "Junio", days: 30 },
-    { month: 7, name: "Julio", days: 31 },
-    { month: 8, name: "Agosto", days: 31 },
-    { month: 9, name: "Septiembre", days: 30 },
-    { month: 10, name: "Octubre", days: 31 },
-    { month: 11, name: "Noviembre", days: 30 },
-    { month: 12, name: "Diciembre", days: 31 },
-];
+import { useState, useEffect } from "react";
 
-
-function Popup  ({
-    isOpen, 
-    onClose, 
-    onSubmit, 
-    title = "Evento",
-    defaultMonth = 1,
-    defaultDay = 1,
-    defaultTitle = "",
-    defaultStart = "",
-    defaultEnd = "",
+function Popup({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  title, 
+  defaultMonth, 
+  defaultDay, 
+  defaultTitle, 
+  defaultStart, 
+  defaultEnd 
 }) {
-    const [eventTitle, setEventTitle] = useState("");
-    const [selectedMonth, setSelectedMonth] = useState(1);
-    const [selectedDay, setSelectedDay] = useState(1);
-    const [startHour, setStartHour] = useState("");
-    const [endHour, setEndHour] = useState("");
+  const [month, setMonth] = useState(defaultMonth || 1);
+  const [day, setDay] = useState(defaultDay || 1);
+  const [eventTitle, setEventTitle] = useState(defaultTitle || "");
+  const [startHour, setStartHour] = useState(defaultStart || "09:00");
+  const [endHour, setEndHour] = useState(defaultEnd || "10:00");
 
-    useEffect(() => {
-        if (isOpen) {
-            setEventTitle(defaultTitle);
-            setSelectedMonth(defaultMonth);
-            setSelectedDay(defaultDay);
-            setStartHour(defaultStart);
-            setEndHour(defaultEnd);
-        }
-    }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      setMonth(defaultMonth || 1);
+      setDay(defaultDay || 1);
+      setEventTitle(defaultTitle || "");
+      setStartHour(defaultStart || "09:00");
+      setEndHour(defaultEnd || "10:00");
+    }
+  }, [isOpen, defaultMonth, defaultDay, defaultTitle, defaultStart, defaultEnd]);
 
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    const currentMonth = months.find((m)=> m.month === Number(selectedMonth));
-
-    const handleSubmit = () => {
-        onSubmit({
-            month: selectedMonth,
-            day: selectedDay,
-            event: {
-                title: eventTitle,
-                startHour,
-                endHour,
-            },
-        });
-        onClose();
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
     
-    return (
-        <div className='popup-container'>
-            <div className='popup'>
-                <h2>{title}</h2>
+    if (!eventTitle.trim()) {
+      alert("Por favor, ingrese un título para el evento");
+      return;
+    }
+    
+    onSubmit({
+      month: Number(month),
+      day: Number(day),
+      event: {
+        title: eventTitle,
+        startHour: startHour,
+        endHour: endHour
+      }
+    });
+    
+    setEventTitle("");
+    setStartHour("09:00");
+    setEndHour("10:00");
+    onClose();
+  };
 
-                <label>Título:</label>
-                <input
-                    type="text"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                />
-
-                <label>Fecha:</label>
-                <div className='date'>
-                    <select
-                        value={selectedMonth}
-                        onChange={(e) => {
-                            setSelectedMonth(Number(e.target.value));
-                            setSelectedDay(1);
-                        }}
-                    >
-                        {months.map((month) => (
-                            <option key={month.month} value={month.month}>
-                                {month.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <select
-                        value={selectedDay}
-                        onChange={(e) => setSelectedDay(Number(e.target.value))}
-                    >
-                        {Array.from({ length: currentMonth.days }, (_, i) => (
-                            <option key={i + 1} value={i + 1}>
-                                {i + 1}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <label>Hora inicio:</label>
-                <input
-                    type="text"
-                    value={startHour}
-                    onChange={(e) => setStartHour(e.target.value)}
-                />
-
-                <label>Hora final:</label>
-                <input
-                    type="text"
-                    value={endHour}
-                    onChange={(e) => setEndHour(e.target.value)}
-                />
-
-                <div className='botones'>
-                    <button className="guardar" onClick={handleSubmit}>Guardar</button>
-                    <button className="cancelar" onClick={onClose}>Cancelar</button>
-                </div>
-            </div>
-        </div>
-  )
+  return (
+    <div className="popup-overlay" onClick={onClose}>
+      <div className="popup" onClick={(e) => e.stopPropagation()}>
+        <h2>{title}</h2>
+        
+        <form onSubmit={handleSubmit}>
+          <label>Mes:</label>
+          <input 
+            type="number" 
+            min="1" 
+            max="12" 
+            value={month} 
+            onChange={(e) => setMonth(Number(e.target.value))} 
+            required
+          />
+          
+          <label>Día:</label>
+          <input 
+            type="number" 
+            min="1" 
+            max="31" 
+            value={day} 
+            onChange={(e) => setDay(Number(e.target.value))} 
+            required
+          />
+          
+          <label>Título del evento:</label>
+          <input 
+            type="text" 
+            value={eventTitle} 
+            onChange={(e) => setEventTitle(e.target.value)} 
+            placeholder="Ej: Reunión importante"
+            required
+          />
+          
+          <label>Hora de inicio:</label>
+          <input 
+            type="time" 
+            value={startHour} 
+            onChange={(e) => setStartHour(e.target.value)} 
+            required
+          />
+          
+          <label>Hora de finalización:</label>
+          <input 
+            type="time" 
+            value={endHour} 
+            onChange={(e) => setEndHour(e.target.value)} 
+            required
+          />
+          
+          <div className="buttons">
+            <button type="button" className="cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="save">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default Popup
+export default Popup;
